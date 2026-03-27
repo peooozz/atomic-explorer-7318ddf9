@@ -3,11 +3,13 @@ import { AtomScene } from "@/components/3d/AtomScene";
 import { PeriodicTable } from "@/components/PeriodicTable";
 import { ElementInfoCard } from "@/components/ElementInfoCard";
 import { ELEMENTS } from "@/data/elements";
-import { Play, Pause, RotateCcw } from "lucide-react";
+import { Play, Pause, RotateCcw, Info, Table2, ChevronDown, ChevronUp } from "lucide-react";
 
 const Index = () => {
   const [selected, setSelected] = useState(ELEMENTS[5]); // Carbon
   const [isPlaying, setIsPlaying] = useState(true);
+  const [showInfo, setShowInfo] = useState(true);
+  const [showTable, setShowTable] = useState(true);
 
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden relative">
@@ -24,11 +26,28 @@ const Index = () => {
             <h1 className="text-lg font-bold text-foreground glow-text font-display">
               Atomic Structure Lab
             </h1>
-            <p className="text-xs text-muted-foreground">Interactive 3D Simulation</p>
+            <p className="text-xs text-muted-foreground">
+              {selected.symbol} — {selected.name} (Z={selected.number})
+            </p>
           </div>
 
           {/* Controls */}
           <div className="flex gap-2">
+            <button
+              onClick={() => setShowInfo(!showInfo)}
+              className={`glass-panel p-2 transition-colors ${showInfo ? "bg-primary/15 border-primary/40" : "hover:bg-primary/10"}`}
+              title={showInfo ? "Hide Info" : "Show Info"}
+            >
+              <Info className="w-4 h-4 text-primary" />
+            </button>
+            <button
+              onClick={() => setShowTable(!showTable)}
+              className={`glass-panel p-2 transition-colors ${showTable ? "bg-primary/15 border-primary/40" : "hover:bg-primary/10"}`}
+              title={showTable ? "Hide Table" : "Show Table"}
+            >
+              <Table2 className="w-4 h-4 text-primary" />
+            </button>
+            <div className="w-px bg-border" />
             <button
               onClick={() => setIsPlaying(!isPlaying)}
               className="glass-panel p-2 hover:bg-primary/10 transition-colors"
@@ -56,14 +75,18 @@ const Index = () => {
         {/* Bottom panel */}
         <div className="p-4 flex gap-4 items-end pointer-events-auto">
           {/* Info card */}
-          <div className="w-72 flex-shrink-0">
-            <ElementInfoCard element={selected} />
-          </div>
+          {showInfo && (
+            <div className="w-72 flex-shrink-0 max-h-[60vh] overflow-y-auto">
+              <ElementInfoCard element={selected} />
+            </div>
+          )}
 
           {/* Periodic table */}
-          <div className="flex-1 max-w-2xl">
-            <PeriodicTable selected={selected} onSelect={setSelected} />
-          </div>
+          {showTable && (
+            <div className="flex-1 max-w-3xl">
+              <PeriodicTable selected={selected} onSelect={setSelected} />
+            </div>
+          )}
         </div>
       </div>
     </div>

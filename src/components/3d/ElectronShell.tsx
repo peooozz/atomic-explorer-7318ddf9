@@ -44,7 +44,7 @@ export function ElectronShell({ shellIndex, electronCount, isPlaying }: Electron
       const angle = initialAngles[i] + t * speed;
       mesh.position.set(
         Math.cos(angle) * radius,
-        Math.sin(angle) * radius * 0.15,
+        0,
         Math.sin(angle) * radius
       );
     });
@@ -56,7 +56,7 @@ export function ElectronShell({ shellIndex, electronCount, isPlaying }: Electron
         const trailAngle = initialAngles[i] + (t - (ti + 1) * 0.04) * speed;
         trail.position.set(
           Math.cos(trailAngle) * radius,
-          Math.sin(trailAngle) * radius * 0.15,
+          0,
           Math.sin(trailAngle) * radius
         );
       });
@@ -67,11 +67,22 @@ export function ElectronShell({ shellIndex, electronCount, isPlaying }: Electron
     <group ref={groupRef} quaternion={tilt}>
       {/* Orbit ring */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[radius - 0.01, radius + 0.01, 128]} />
+        <ringGeometry args={[radius - 0.005, radius + 0.005, 128]} />
         <meshBasicMaterial
           color="#40d0e0"
           transparent
-          opacity={0.12}
+          opacity={0.2}
+          side={THREE.DoubleSide}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      {/* Subtle outer glow for orbit */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[radius - 0.04, radius + 0.04, 128]} />
+        <meshBasicMaterial
+          color="#40d0e0"
+          transparent
+          opacity={0.03}
           side={THREE.DoubleSide}
         />
       </mesh>
@@ -85,14 +96,18 @@ export function ElectronShell({ shellIndex, electronCount, isPlaying }: Electron
             }}
           >
             <sphereGeometry args={[0.06, 12, 12]} />
-            <meshStandardMaterial
+            <meshPhysicalMaterial
               color="#60f0ff"
               emissive="#60f0ff"
-              emissiveIntensity={2}
+              emissiveIntensity={2 + Math.sin(Date.now() * 0.006 + i) * 1}
+              roughness={0.1}
+              metalness={0.9}
+              clearcoat={1}
+              toneMapped={false}
             />
           </mesh>
           {/* Motion trail */}
-          {[0, 1, 2, 3].map((ti) => (
+          {[0, 1, 2, 3, 4, 5].map((ti) => (
             <mesh
               key={ti}
               ref={(el) => {
@@ -102,11 +117,12 @@ export function ElectronShell({ shellIndex, electronCount, isPlaying }: Electron
                 }
               }}
             >
-              <sphereGeometry args={[0.03 - ti * 0.005, 8, 8]} />
+              <sphereGeometry args={[0.04 - ti * 0.006, 8, 8]} />
               <meshBasicMaterial
                 color="#60f0ff"
                 transparent
-                opacity={0.4 - ti * 0.1}
+                opacity={0.5 - ti * 0.08}
+                blending={THREE.AdditiveBlending}
               />
             </mesh>
           ))}

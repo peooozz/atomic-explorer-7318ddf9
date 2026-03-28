@@ -6,55 +6,55 @@
 
 @layer base {
   :root {
-    --background: 230 25% 5%;
-    --foreground: 210 20% 92%;
+    --background: 240 30% 3%;
+    --foreground: 210 20% 98%;
 
-    --card: 230 20% 10%;
-    --card-foreground: 210 20% 92%;
+    --card: 240 25% 6%;
+    --card-foreground: 210 20% 98%;
 
-    --popover: 230 20% 10%;
-    --popover-foreground: 210 20% 92%;
+    --popover: 240 25% 6%;
+    --popover-foreground: 210 20% 98%;
 
-    --primary: 190 90% 55%;
-    --primary-foreground: 230 25% 5%;
+    --primary: 200 100% 65%;
+    --primary-foreground: 240 30% 3%;
 
-    --secondary: 260 60% 55%;
-    --secondary-foreground: 210 20% 92%;
+    --secondary: 270 80% 65%;
+    --secondary-foreground: 210 20% 98%;
 
-    --muted: 230 15% 15%;
-    --muted-foreground: 215 15% 55%;
+    --muted: 240 15% 15%;
+    --muted-foreground: 215 20% 70%;
 
-    --accent: 340 75% 55%;
-    --accent-foreground: 210 20% 92%;
+    --accent: 340 90% 65%;
+    --accent-foreground: 210 20% 98%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 90% 65%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 230 15% 20%;
-    --input: 230 15% 20%;
-    --ring: 190 90% 55%;
+    --border: 240 15% 20%;
+    --input: 240 15% 20%;
+    --ring: 200 100% 65%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    --proton: 0 75% 55%;
-    --neutron: 220 70% 55%;
-    --electron: 190 95% 65%;
-    --orbit: 190 80% 50%;
+    --proton: 340 90% 65%;
+    --neutron: 220 80% 65%;
+    --electron: 200 100% 65%;
+    --orbit: 200 90% 50%;
 
-    --glass: 230 20% 12%;
-    --glass-border: 230 15% 25%;
+    --glass: 240 25% 6%;
+    --glass-border: 240 20% 25%;
 
     --font-display: 'Space Grotesk', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
 
-    --sidebar-background: 230 20% 8%;
-    --sidebar-foreground: 210 20% 92%;
-    --sidebar-primary: 190 90% 55%;
-    --sidebar-primary-foreground: 230 25% 5%;
-    --sidebar-accent: 230 15% 15%;
-    --sidebar-accent-foreground: 210 20% 92%;
-    --sidebar-border: 230 15% 20%;
-    --sidebar-ring: 190 90% 55%;
+    --sidebar-background: 240 25% 4%;
+    --sidebar-foreground: 210 20% 98%;
+    --sidebar-primary: 200 100% 65%;
+    --sidebar-primary-foreground: 240 30% 3%;
+    --sidebar-accent: 240 20% 12%;
+    --sidebar-accent-foreground: 210 20% 98%;
+    --sidebar-border: 240 15% 20%;
+    --sidebar-ring: 200 100% 65%;
   }
 }
 
@@ -67,30 +67,52 @@
     @apply bg-background text-foreground;
     font-family: var(--font-display);
     overflow: hidden;
+    /* Subtle deep space gradient */
+    background: radial-gradient(circle at center, hsl(240 20% 8%) 0%, hsl(240 30% 2%) 100%);
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--glass-border));
+    border-radius: 6px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--primary) / 0.5);
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-glass/80 backdrop-blur-xl border border-glass-border rounded-xl;
+    @apply bg-glass/60 backdrop-blur-2xl border border-glass-border/40 rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.4)];
   }
 
   .glow-text {
-    text-shadow: 0 0 20px hsl(var(--primary) / 0.5), 0 0 40px hsl(var(--primary) / 0.2);
+    text-shadow: 0 0 20px hsl(var(--primary) / 0.6), 0 0 40px hsl(var(--primary) / 0.3), 0 0 10px hsl(var(--primary) / 0.8);
+  }
+  
+  .glow-text-secondary {
+    text-shadow: 0 0 20px hsl(var(--secondary) / 0.6), 0 0 40px hsl(var(--secondary) / 0.3), 0 0 10px hsl(var(--secondary) / 0.8);
   }
 
   .element-cell {
-    @apply glass-panel flex flex-col items-center justify-center cursor-pointer
-           transition-all duration-200 hover:scale-105 hover:border-primary/50;
+    @apply flex flex-col items-center justify-center cursor-pointer
+           transition-all duration-300;
     font-family: var(--font-mono);
   }
 
   .element-cell-active {
-    @apply border-primary bg-primary/15 shadow-[0_0_15px_hsl(var(--primary)/0.3)];
+    @apply border-primary bg-primary/20 shadow-[0_0_20px_hsl(var(--primary)/0.5)] z-20 scale-110;
   }
 
   .data-label {
-    @apply text-muted-foreground text-xs uppercase tracking-widest;
+    @apply text-muted-foreground text-[10px] uppercase tracking-[0.2em] font-medium;
     font-family: var(--font-mono);
   }
 }

@@ -23,7 +23,7 @@ function randomSpherePoint(radius: number): [number, number, number] {
 export function Nucleus({ protons, neutrons }: NucleusProps) {
   const groupRef = useRef<THREE.Group>(null);
   const total = protons + neutrons;
-  const nucleusRadius = Math.max(0.3, Math.cbrt(total) * 0.25);
+  const nucleusRadius = Math.max(0.2, Math.cbrt(total) * 0.15);
 
   const particles = useMemo(() => {
     const result: { pos: [number, number, number]; isProton: boolean }[] = [];
@@ -36,49 +36,58 @@ export function Nucleus({ protons, neutrons }: NucleusProps) {
     return result;
   }, [protons, neutrons, total, nucleusRadius]);
 
-  const jitterOffsets = useRef<Float32Array>(new Float32Array(total * 3));
+  const oscillationRef = useRef(0);
 
-  useFrame((_, delta) => {
-    const arr = jitterOffsets.current;
-    for (let i = 0; i < total * 3; i++) {
-      arr[i] += (Math.random() - 0.5) * delta * 2;
-      arr[i] *= 0.95;
-    }
+  useFrame((state, delta) => {
+    oscillationRef.current += delta * 2;
+    
     if (groupRef.current) {
       groupRef.current.children.forEach((child, idx) => {
         if (idx < particles.length) {
           const p = particles[idx].pos;
+          // Smooth sinus-based micro-oscillation
+          const phase = idx * 0.5;
           child.position.set(
-            p[0] + arr[idx * 3],
-            p[1] + arr[idx * 3 + 1],
-            p[2] + arr[idx * 3 + 2]
+            p[0] + Math.sin(oscillationRef.current + phase) * 0.03,
+            p[1] + Math.cos(oscillationRef.current + phase) * 0.03,
+            p[2] + Math.sin(oscillationRef.current * 0.8 + phase) * 0.03
           );
         }
       });
     }
   });
 
-  const particleSize = Math.max(0.06, 0.15 - total * 0.002);
+  const particleSize = Math.max(0.08, 0.15 - total * 0.001);
 
   return (
     <group ref={groupRef}>
       {particles.map((p, i) => (
         <mesh key={i} position={p.pos}>
           <sphereGeometry args={[particleSize, 16, 16]} />
-          <meshStandardMaterial
-            color={p.isProton ? "#e05555" : "#5580e0"}
-            emissive={p.isProton ? "#e05555" : "#5580e0"}
-            emissiveIntensity={0.8}
-            roughness={0.3}
-            metalness={0.2}
+          <meshPhysicalMaterial
+            color={p.isProton ? "#ff4040" : "#4060ff"}
+            emissive={p.isProton ? "#ff2020" : "#2040ff"}
+            emissiveIntensity={p.isProton ? 1.5 : 1}
+            roughness={0.05}
+            metalness={0.8}
+            clearcoat={1}
+            clearcoatRoughness={0.1}
+            reflectivity={1}
+            toneMapped={false}
           />
         </mesh>
       ))}
-      {/* Central glow */}
+      {/* Central volumetric glow */}
       <mesh>
-        <sphereGeometry args={[nucleusRadius * 1.2, 16, 16]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.05} />
+        <sphereGeometry args={[nucleusRadius * 2, 32, 32]} />
+        <meshBasicMaterial color={protons > neutrons ? "#ff4040" : "#40d0e0"} transparent opacity={0.08} blending={THREE.AdditiveBlending} />
       </mesh>
+      <pointLight 
+        intensity={2} 
+        distance={nucleusRadius * 4} 
+        color={protons > neutrons ? "#ff4040" : "#40d0e0"} 
+        decay={2}
+      />
     </group>
   );
 }
